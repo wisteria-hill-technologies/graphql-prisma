@@ -42,7 +42,7 @@ prisma -v
     {
       "projects": {
         "prisma": {  //your prisma project name
-          "schemaPath": "src/generated/prism.graphql", //this is where type definition from prisma will be saved.
+          "schemaPath": "src/generated/prisma.graphql", //this is where type definition from prisma will be saved.
           "extensions": {
             "endpoints": {
               "default": "http://localhost:4466" //This is the endpoint for prisma graphql.
@@ -55,7 +55,9 @@ prisma -v
 8. add bellow to the scripts in package.json.
 ```"get-schema": "graphql get-schema -p <your prisma project name here. -p stands for project>"``` 
 9. run ```npm run get-schema``` generated folder will be populated with prisma schema definitions.  generated folder will be auto-populated so do not manually change its content.
-10. Create prisma.js inside src folder. In prisma.js, you can write functions to work with data to/from prisma.
+10. Create prisma.js inside src folder. In prisma.js, set up a new Prisma instance and export it as default.
+11. Import prisma from prisma.js file and add it to context in graphQL server in index.js in the root.<br/>
+    Now, prisma is available to access in your resolvers.
 
 ### Customise Type Relationships
 1. Go to datamodel.prisma In prisma folder.
