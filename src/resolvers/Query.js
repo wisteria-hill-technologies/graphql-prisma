@@ -1,6 +1,21 @@
 const Query = {
   users (parent, args, { prisma }, info) {
-    return risma.query.users(null, info);  // 1st param for request arguments, 2nd param is what we request as output.
+    const opArgs = {};
+
+    if(args.query) {
+      opArgs.where = {
+        OR: [
+          {
+            name_contains: args.query
+          },
+          {
+            email_contains: args.query
+          }
+        ]
+      }
+    }
+    return prisma.query.users(opArgs, info);
+    // 1st param for request arguments, 2nd param is what we request as output.
     // Above, there are 3 options for the 2nd argument - null, string like "id name email age", or object
     // Using info, we do not manually type what is requested.
 
@@ -12,7 +27,20 @@ const Query = {
     // });
   },
   posts(parent, args, { prisma }, info) {
-    return prisma.query.posts(null, info);
+    const opArgs = {};
+    if(args.query) {
+      opArgs.where = {
+        OR: [
+          {
+            title_contains: args.query
+          },
+          {
+            body_contains: args.query
+          }
+        ]
+      }
+    }
+    return prisma.query.posts(opArgs, info);
     // if(!args.query) {
     //   return db.posts;
     // }
@@ -22,11 +50,12 @@ const Query = {
     //   return titleIncludesQuery || bodyIncludesQuery;
     // });
   },
-  comments(parent, args, { db }, info) {
-    if(!args.query) {
-      return db.comments;
-    }
-    return db.comments.filter(comment => comment.text.includes(args.query));
+  comments(parent, args, { prisma }, info) {
+    return prisma.query.comments(null, info);
+    // if(!args.query) {
+    //   return db.comments;
+    // }
+    // return db.comments.filter(comment => comment.text.includes(args.query));
   },
   me() {
     return {
