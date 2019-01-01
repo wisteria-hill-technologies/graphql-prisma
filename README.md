@@ -58,6 +58,19 @@ prisma -v
 10. Create prisma.js inside src folder. In prisma.js, set up a new Prisma instance and export it as default.
 11. Import prisma from prisma.js file and add it to context in graphQL server in index.js in the root.<br/>
     Now, prisma is available to access in your resolvers.
+12. subscription in ```schema.graphql```
+   In case you use subscription with prisma, make sure the schema contains ````node```` instead of ```data``` for subscription, like below.
+   ``` 
+   type PostSubscriptionPayload {
+       mutation: MutationType!
+       node: Post
+   }
+   
+   type CommentSubscriptionPayload {
+       mutation: MutationType!
+       node: Comment
+   }
+   ```
 
 ### Customise Type Relationships
 1. Go to datamodel.prisma In prisma folder.
@@ -67,3 +80,62 @@ prisma -v
 3. In prisma folder in terminal, ```prisma deploy```
 4. Go back to the root folder. ```npm start``` to see if the changes are reflected in graphql playground for prisma (localhost:4466).
 
+### Hiding Prisma
+1. Open prisma.yml in prisma folder.
+   - add your secret.
+    This will lock down the prisma access.
+   
+2. In prisma folder, ```deploy prisma```.
+3. Open prisma.js in src folder.
+   - add the same secret to the prisma instance.
+    This will allow the node server to access the prisma.
+
+### Accessing prisma directly still.
+1. Go to prisma folder in your terminal.
+2. execute ```prisma token```
+   1) This will generate an authorisation token.
+   2) Copy and paste the token.
+   3) add in the HTTP HEADERS the following in the prisma graphQL playground.
+   ``` 
+   {
+     "Authorization": "Bearer <your token>"
+   }
+   ```
+
+### Setting up Password fields
+1. add password field to User type in datamodel.prisma
+```password: String!```
+2. schema.graphql in src - do the same.
+3. If you want to delete all the previous data, go to prisma folder in terminal.
+   1) ````prisma delete```` Warning!: This will delete all the data in the database.  We do this because previous data did not have password fields.
+   2) ```prisma deploy``` to deploy.
+   3) We need to update schema, with get-schema
+   In order to do this after the prisma lockdown with password,
+   we need to point get-schema to prisma.yml file.
+   In .graphqlconfig,
+   ```
+       ...
+       "extensions": {
+               "prisma": "prisma/prisma.yml",
+               ...
+   ```
+   then, from now on we can run ```npm run get-schema``` again.
+
+### Storing Passwords
+1. Add password field in input CreateUserInput in schema.graphql file.
+    ```
+    input CreateUserInput {
+        name: String!
+        email: String!
+        password: String!
+    }
+    ```
+2. Go to Mutation.js in resolvers
+   1) You can add validation here such as password length check.
+   2) Install and implement bcrypt hashing for the password to be saved.
+   3) Install and implement jwt token.
+   4) Adjust createUser in schema.graphql to return a new type to include token with user.
+   
+### Logging in
+1. Add login mutation to schema.graphql
+2. Add login function resolver to Mutation.js.
