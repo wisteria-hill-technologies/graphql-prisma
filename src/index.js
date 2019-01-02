@@ -19,9 +19,13 @@ const server = new GraphQLServer({
     Post,
     Comment
   },
-  context: {
-    pubsub,
-    prisma
+  context(request) {
+    // need request.request.headers for Authorization (JWT) token in the headers.
+    return {
+      pubsub,
+      prisma,
+      request
+    }
   }
 });
 

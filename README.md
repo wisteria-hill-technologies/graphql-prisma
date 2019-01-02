@@ -139,3 +139,46 @@ prisma -v
 ### Logging in
 1. Add login mutation to schema.graphql
 2. Add login function resolver to Mutation.js.
+
+### Authenticating endpoints
+1. Pass request as parameter to context(make it a function) in graphQL server in index.js as below.
+```
+  context(request) {
+    // need request.request.headers for Authorization (JWT) token in the headers.
+    return {
+      pubsub,
+      prisma,
+      request
+    }
+```
+2. Create a utility function for authentication.
+    1) Create utils folder under src.
+    2) Create ````etUserId.js```` to authenticate the user making a request with token.
+    3) In Mutation.js, do something like below:
+    ```
+      createPost(parent, args, { prisma, request }, info) {
+        const userId = getUserId(request);
+    
+        return prisma.mutation.createPost({
+          data: {
+            title: args.data.title,
+            body: args.data.body,
+            published: args.data.published,
+            author: {
+              connect: {
+                id: userId  //use authenticated user's id.
+              }
+            }
+          }
+        }, info);
+      },
+    ```
+    4) In schema.graphql, remove ```author: ID!``` from CreatePostInput
+        ```
+        input CreatePostInput {
+            title: String!,
+            body: String!,
+            published: Boolean!,
+           #  we don't need author here anymore.  author: ID!
+        }
+        ```
