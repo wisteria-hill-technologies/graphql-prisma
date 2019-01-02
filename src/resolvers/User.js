@@ -1,11 +1,18 @@
+import getUserId from '../utils/getUserId';
+
 const User = {
-  // // Below becomes unnecessary with prisma as prisma automatically works out the relationship for you.
-  // posts(parent, args, { db }, info) {
-  //   return db.posts.filter(post => post.author === parent.id);
-  // },
-  // comments(parent, args, { db }, info) {
-  //   return db.comments.filter(comment => comment.author === parent.id);
-  // }
+  email: {
+    fragment: 'fragment userId on User { id }',
+    resolve(parent, args, { prisma, request }, info) {
+      const userId = getUserId(request, false);
+
+      if(userId && userId === parent.id) {
+        return parent.email;
+      } else {
+        return null;
+      }
+    }
+  }
 };
 
 export { User as default };

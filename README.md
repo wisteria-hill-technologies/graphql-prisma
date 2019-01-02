@@ -153,8 +153,8 @@ prisma -v
 ```
 2. Create a utility function for authentication.
     1) Create utils folder under src.
-    2) Create ````etUserId.js```` to authenticate the user making a request with token.
-    3) In Mutation.js, do something like below:
+    2) Create ````getUserId.js```` to authenticate the user making a request with token.
+3. In Mutation.js, do something like below:
     ```
       createPost(parent, args, { prisma, request }, info) {
         const userId = getUserId(request);
@@ -173,7 +173,7 @@ prisma -v
         }, info);
       },
     ```
-    4) In schema.graphql, remove ```author: ID!``` from CreatePostInput
+ 4. In schema.graphql, remove ```author: ID!``` from CreatePostInput
         ```
         input CreatePostInput {
             title: String!,
@@ -182,3 +182,18 @@ prisma -v
            #  we don't need author here anymore.  author: ID!
         }
         ```
+ 
+* Check Mutation.js and Query.js as well as schema.graphql
+
+#### Example: User
+schema.graphql
+```
+type User {
+    id: ID!
+    name: String!
+    email: String
+    password: String!
+    posts: [Post!]!
+    comments: [Comment!]!
+}
+```
