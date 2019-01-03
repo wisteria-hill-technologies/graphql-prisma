@@ -185,6 +185,31 @@ prisma -v
  
 * Check Mutation.js and Query.js as well as schema.graphql
 
+### fragment
+#### Set up
+1. Add fragmentReplacements in prisma.js
+2. Collect all the resolvers in resolvers/index.js and pass them through fragmentReplacements and export.
+3. Import resolvers and fragmentReplacements, and Set them up in src/index.js.
+4. Use fragments in resolvers where you need them to make sure it always returns some specific data.  e.g. See User.js
+
+#### Example on how to use it
+```
+{
+  users{
+    ...userFields
+  }
+}
+
+fragment userFields on User {
+  id
+  name
+  email
+  posts {
+    id
+  }
+}
+```
+
 #### Example: User
 schema.graphql
 ```
@@ -196,4 +221,24 @@ type User {
     posts: [Post!]!
     comments: [Comment!]!
 }
+```
+
+User.js
+```
+import getUserId from '../utils/getUserId';
+
+const User = {
+  email: {
+    fragment: 'fragment userId on User { id }', //This fragment will make sure to get id in parent below (without explicitly asked by user's query from ui) and pass it on to resolve.
+    resolve(parent, args, { prisma, request }, info) {
+      const userId = getUserId(request, false);
+
+      if(userId && userId === parent.id) {
+        return parent.email;
+      } else {
+        return null;
+      }
+    }
+  }
+};
 ```
