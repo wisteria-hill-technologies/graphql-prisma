@@ -1,4 +1,4 @@
-# GraphQL Server with Prisma ORM
+# GraphQL Backend Server with Prisma ORM
 
 First install prisma on your machine (if you have not done so yet).
 ``` 
