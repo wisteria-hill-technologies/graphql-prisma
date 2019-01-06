@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import getUserId from '../utils/getUserId';
 import generateToken from "../utils/generateToken";
+import hashPassword from '../utils/hashPassword';
 
 const Mutation = {
   async createUser(parent, args, { prisma }, info) {
@@ -8,15 +9,11 @@ const Mutation = {
     // if(emailTaken) {
     //   throw new Error('Email taken.');
     // }
-    if(args.data.password.length < 8) {
-      throw new Error("Password must be 8 characters or longer.");
-    }
-
-    const hashedPassword = await bcrypt.hash(args.data.password, 10);
+    const password = await hashPassword(args.data.password);
     const user = await prisma.mutation.createUser({
       data: {
         ...args.data,
-        password: hashedPassword
+        password
       }
     }); // do not add info here as a second param for output. This will return all scalar fields. The info argument are the fields specified by the client that they want returned.  We specified that we wanted:
     //
@@ -59,8 +56,12 @@ const Mutation = {
         }
       }, info);
   },
-  updateUser(parent, args, { prisma, request }, info) {
+  async updateUser(parent, args, { prisma, request }, info) {
     const userId = getUserId(request);
+
+    if (typeof args.data.password === 'string') {
+      args.data.password = await hashPassword(args.data.password);
+    }
 
     return prisma.mutation.updateUser({
       where: {

@@ -23,7 +23,8 @@ const User = {
         }
       })
     }
-  }
+  },
+  password: () => "Password is hidden"
 };
 
 export { User as default };
