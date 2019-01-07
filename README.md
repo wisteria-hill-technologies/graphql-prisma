@@ -242,3 +242,32 @@ const User = {
   }
 };
 ```
+
+### Pagination
+1. Add ```first```,```skip```, ```after``` to your queries in schema.graphql
+    - skip: how many items to skip
+    - first: (first) number of items to get (after skipping if any)
+    - after: after a specific item number
+    
+    ```
+    type Query {
+             users(query: String, first: Int, skip: Int, after: String): [User!]!
+             posts(query: String, first: Int, skip: Int, after: String): [Post!]!
+             myPosts(query: String, first: Int, skip: Int, after: String): [Post!]!
+             comments (query: String, first: Int, skip: Int, after: String): [Comment!]!
+             me: User!
+             post(id: ID!): Post!
+         }
+    ```
+2. Pass them to query in resolvers
+    Example, resolvers/Query.js
+    ```
+    const Query = {
+      users (parent, args, { prisma }, info) {
+        const opArgs = {
+          first: args.first,
+          skip: args.skip,
+          after: args.after
+        };
+      ...
+    ```
