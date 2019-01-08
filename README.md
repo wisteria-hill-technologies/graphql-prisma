@@ -271,3 +271,36 @@ const User = {
         };
       ...
     ```
+### createdAt and updatedAt
+prisma automatically creates timestamps for createdAt and updatedAt.  But, we need to specify them in datamodel.graphql (also make sure to do ```prisma deploy``` in prisma folder and ```npm run get-schema``` in the root) and schema.graphql in node api.
+
+### Sorting
+- Go to the playground for prisma (localhost:4466)
+- Check out input arguments called ```orderBy``` for posts for example.
+1. In schema.graphql (the node api server), you can import enum for orderBy from the generated schema like below with hash:
+    ```
+    # import UserOrderByInput, PostOrderByInput, CommentOrderByInput from './generated/prisma.graphql'
+    ```
+    then, use it in the same file
+    ```
+    type Query {
+        users(query: String, first: Int, skip: Int, after: String, orderBy: UserOrderByInput): [User!]!
+        posts(query: String, first: Int, skip: Int, after: String, orderBy: PostOrderByInput): [Post!]!
+        myPosts(query: String, first: Int, skip: Int, after: String, orderBy: PostOrderByInput): [Post!]!
+        comments (query: String, first: Int, skip: Int, after: String, orderBy: CommentOrderByInput): [Comment!]!
+        me: User!
+        post(id: ID!): Post!
+    }
+    ```
+2. In resolver, pass it through like below:
+    ```
+    const Query = {
+         users (parent, args, { prisma }, info) {
+           const opArgs = {
+             first: args.first,
+             skip: args.skip,
+             after: args.after,
+             orderBy: args.orderBy
+           };
+           ....
+    ```
