@@ -304,3 +304,10 @@ prisma automatically creates timestamps for createdAt and updatedAt.  But, we ne
            };
            ....
     ```
+
+### Deployment to Prisma Cloud
+1. Sign up/log in
+2. Create (add) a server
+3. Create a new database (connect to your service provider e.g. Heroku)
+4. Set up and create a server (heroku)
+5. Provide details to your database admin panel (e.g. pgAdmin for postgres)
