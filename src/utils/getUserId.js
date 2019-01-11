@@ -9,7 +9,7 @@ const getUserId = (request, requireAuth = true) => {
     // This token should have been originally created with a secret.
     // This means we can verify the token with the same secret.
     // Here I need to implement in case token is not valid but requireAuth is false...To be done later...
-    const decoded = jwt.verify(token, 'thisismysecretkey');
+    const decoded = jwt.verify(token, process.env.JWTSECRET);
     return decoded.userId;
   }
   if(requireAuth) {

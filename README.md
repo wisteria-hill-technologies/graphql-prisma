@@ -316,7 +316,7 @@ prisma automatically creates timestamps for createdAt and updatedAt.  But, we ne
    2) Inside the config folder, create dev.env and prod.env.
    3) dev.env
       - create ```PRISMA_ENDPOINT=http://localhost:4466`` inside dev.env
-      - now inside prisma folder you can do: prisma deploy ../config/dev.env
+      - now inside prisma folder you can do: ```prisma deploy -e ../config/dev.env```
    4) prod.env
       - in prisma folder in terminal, ```prisma login``` and grant permission.
       - in the same terminal, now do ```prisma deploy -e ../config/prod.env```
@@ -384,7 +384,7 @@ prisma automatically creates timestamps for createdAt and updatedAt.  But, we ne
 8. Set environmental variable in Heroku
     ```heroku config:set PRISMA_ENDPOINT=<your endpoint here for production>```
     ```heroku config:set PRISMA_SECRET=<your secret>```   
-9. prisma deploy -e ../config/dev.env
+9. Commit and push your changes to ```heroku git push heroku master```
       
       
    
