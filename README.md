@@ -378,11 +378,13 @@ prisma automatically creates timestamps for createdAt and updatedAt.  But, we ne
     
 8. Start command for production
     ```
-    "start": "env-cmd ./config/prod.env node dist/index.js",
+    "start": "node dist/index.js",
     ```
-    
-    
-    
+7. ```heroku create```
+8. Set environmental variable in Heroku
+    ```heroku config:set PRISMA_ENDPOINT=<your endpoint here for production>```
+    ```heroku config:set PRISMA_SECRET=<your secret>```   
+9. prisma deploy -e ../config/dev.env
       
       
    
