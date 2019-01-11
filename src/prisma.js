@@ -3,7 +3,7 @@ import { fragmentReplacements } from "./resolvers";
 
 const prisma = new Prisma({
   typeDefs: 'src/generated/prisma.graphql', //takes generated type definition from prisma.
-  endpoint: 'http://localhost:4466',
+  endpoint: process.env.PRISMA_ENDPOINT,
   secret: 'thisismysupersecret',
   fragmentReplacements
 });

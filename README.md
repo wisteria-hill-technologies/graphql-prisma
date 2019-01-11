@@ -310,4 +310,79 @@ prisma automatically creates timestamps for createdAt and updatedAt.  But, we ne
 2. Create (add) a server
 3. Create a new database (connect to your service provider e.g. Heroku)
 4. Set up and create a server (heroku)
-5. Provide details to your database admin panel (e.g. pgAdmin for postgres)
+5. Set up database: Provide details to your database admin panel (e.g. pgAdmin for postgres)
+6. Deploy prisma to the server - make prisma deploy work.
+   1) create a 'config' folder in the root of the project.
+   2) Inside the config folder, create dev.env and prod.env.
+   3) dev.env
+      - create ```PRISMA_ENDPOINT=http://localhost:4466`` inside dev.env
+      - now inside prisma folder you can do: prisma deploy ../config/dev.env
+   4) prod.env
+      - in prisma folder in terminal, ```prisma login``` and grant permission.
+      - in the same terminal, now do ```prisma deploy -e ../config/prod.env```
+      - Answer the questions in the terminal for the setup.
+      ```
+      ➜  prisma git:(master) ✗ prisma deploy -e ../config/prod.env
+       ▸    [WARNING] in /Users/nobuyukifujioka/Documents/noby-coding/graphql-prisma/prisma/prisma.yml: A valid environment variable to satisfy the declaration
+       ▸    'env:PRISMA_ENDPOINT' could not be found.
+      
+      ? Set up a new Prisma server or deploy to an existing server? <select it>
+      ? Choose a name for your service <type here>
+      ? Choose a name for your stage <type prod>
+      ```
+      - copy the https end point and past it to prod.env.
+      - keep prisma.yml as below:
+          ```
+          endpoint: ${env:PRISMA_ENDPOINT}
+          datamodel: datamodel.prisma
+          secret: <whatever is your secret>
+          ```
+      - From now on, you can do in the prisma folder in the terminal: ```prisma deploy -e ../config/prod.env```
+   5) See if the prisma server is deployed: Go to prisma cloud. (You can open playground!)
+   6) check database admin panel (e.g. pgAdmin) and Data Browser in prisma cloud, to see if all working correctly if you create a data in the playground.
+   
+### Deployment of the node.js api app (on Heroku)
+1. ```npm install -g heroku``` if you have not got heroku cli yet.
+2. In terminal, ```heroku login```
+3. Adjust the port in index.js in the node.js app as below:
+    ```
+    server.start({ port: process.env.PORT || 4000 }, () => {
+      console.log('The server is up!');
+    });
+    ```
+4. In Prisma.js, set
+    ```
+    endpoint: process.env.PRISMA_ENDPOINT,
+    ```
+5. Install env-cmd to pass environmental variable above.
+   ```
+   npm install env-cmd
+   ```
+5. In package.json, pass the environmental variable.
+    ```
+    "dev": "env-cmd ./config/dev.env nodemon src/index.js --ext js,graphql --exec babel-node",
+    ```
+6. Below for transpiling the code
+    ```
+    "heroku-postbuild": "babel src --out-dir dist --copy-files", // babel transpiles the src files and output to dist folder. --copy-files will copy files that are not js files as well.
+    ```
+7. babel (for prod) vs babel-node (for dev)
+    - banel does not come with below so need to install
+        ```
+        npm install @babel/polyfill
+        ```
+    - import the polyfill in index.js
+    ```
+    import '@babel/polyfill';
+    ```
+    
+8. Start command for production
+    ```
+    "start": "env-cmd ./config/prod.env node dist/index.js",
+    ```
+    
+    
+    
+      
+      
+   
