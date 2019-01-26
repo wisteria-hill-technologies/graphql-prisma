@@ -7,21 +7,26 @@ prisma -v
 ```
 
 ## Prisma setup
+- Prerequisite:
+Set up a database
+
 1. Initialise a new project for prisma.
 - create a new folder for prisma. cd into it.
 - Initialise prisma.
     ```prisma init <project-name>```
     Enter details about your database.
     Don't generate Prisma client if you are making one yourself.
-    It will create three new files as below.
+    It will automatically create three new files as below.
     ```
       prisma.yml           Prisma service definition
       datamodel.prisma    GraphQL SDL-based datamodel (foundation for database)
       docker-compose.yml   Docker configuration file
     ```
+    If you are using Heroku, make sure to add ```ssl: true``` to docker-compose.yml file.
 - Follow the instruction in the terminal.
 2. ```docker-compose up -d``` This will run the docker container for prisma ORM in the background.
 3. ```prisma deploy```
+    For development, ```prisma deploy -e ../config/dev.env``` if the env file is already set up.
     This is to reflect the latest changes in your database.
     This will deploy the graphQL server.
     Now if you define the datamodel.prisma, prisma will automatically create query, mutation, and subscriptions for you! =)
@@ -30,6 +35,17 @@ prisma -v
 
 ## Connecting to a Node Server
 1. Create package.json file with all the dependencies and install them.
+    ```
+      "scripts": {
+        "start": "node dist/index.js",
+        "heroku-postbuild": "babel src --out-dir dist --copy-files",
+        "dev": "env-cmd ./config/dev.env nodemon src/index.js --ext js,graphql --exec babel-node",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "get-schema": "graphql get-schema -p prisma --dotenv config/dev.env"
+      },
+    ```
+    - dev: use```dev.env``` for environmental variables, then ```--ext js,graphql --exec babel-node``` run babel and tell nodemon to watch the transpiled files  which have extensions of js and graphql.
+
 2. Install prisma-binding in the root folder.
     ```npm install prisma-binding```
 3. Install graphql-cli in the root folder.
@@ -92,7 +108,7 @@ prisma -v
 
 ### Accessing prisma directly still.
 1. Go to prisma folder in your terminal.
-2. execute ```prisma token```
+2. execute ```prisma token``` pass env variables for dev or prod environments.
    1) This will generate an authorisation token.
    2) Copy and paste the token.
    3) add in the HTTP HEADERS the following in the prisma graphQL playground.
@@ -101,6 +117,7 @@ prisma -v
      "Authorization": "Bearer <your token>"
    }
    ```
+    *** For production, you can also access from Prisma Cloud -> Services -> Select your service -> Playground link on the left hand side of the screen.  This will open the playground with auth token.
 
 ### Setting up Password fields
 1. add password field to User type in datamodel.prisma
@@ -304,23 +321,26 @@ prisma automatically creates timestamps for createdAt and updatedAt.  But, we ne
            };
            ....
     ```
-
-### Deployment to Prisma Cloud
+## Production Deployment
+### 1. Host/Deploy Prisma Docker container - Deployment to Prisma Cloud
+AND
+### 2. Production Database - e.g. Heroku
 1. Sign up/log in
 2. Create (add) a server
-3. Create a new database (connect to your service provider e.g. Heroku)
+3. **Create a new database** (connect to your service provider e.g. Heroku) - you can do this inside the Create Server process in Prisma Cloud.
 4. Set up and create a server (heroku)
-5. Set up database: Provide details to your database admin panel (e.g. pgAdmin for postgres)
+5. Set up database: Provide details to your database admin panel (e.g. pgAdmin for postgres) - details will be available in Heroku, for example.
 6. Deploy prisma to the server - make prisma deploy work.
    1) create a 'config' folder in the root of the project.
-   2) Inside the config folder, create dev.env and prod.env.
+   2) Inside the config folder, create dev.env.
    3) dev.env
       - create ```PRISMA_ENDPOINT=http://localhost:4466`` inside dev.env
       - now inside prisma folder you can do: ```prisma deploy -e ../config/dev.env```
    4) prod.env
       - in prisma folder in terminal, ```prisma login``` and grant permission.
       - in the same terminal, now do ```prisma deploy -e ../config/prod.env```
-      - Answer the questions in the terminal for the setup.
+      - First time, it will say it cannot find the environmental variables.
+      - Answer the questions in the terminal for the setup. Select the prisma server you created in Prisma Cloud earlier.
       ```
       ➜  prisma git:(master) ✗ prisma deploy -e ../config/prod.env
        ▸    [WARNING] in /Users/nobuyukifujioka/Documents/noby-coding/graphql-prisma/prisma/prisma.yml: A valid environment variable to satisfy the declaration
@@ -330,8 +350,8 @@ prisma automatically creates timestamps for createdAt and updatedAt.  But, we ne
       ? Choose a name for your service <type here>
       ? Choose a name for your stage <type prod>
       ```
-      - copy the https end point and past it to prod.env.
-      - keep prisma.yml as below:
+      - Then, endpoint will be written in prisma.yml.  Swap with env and copy the original to prod.env.
+      - prisma.yml as below:
           ```
           endpoint: ${env:PRISMA_ENDPOINT}
           datamodel: datamodel.prisma
@@ -341,7 +361,7 @@ prisma automatically creates timestamps for createdAt and updatedAt.  But, we ne
    5) See if the prisma server is deployed: Go to prisma cloud. (You can open playground!)
    6) check database admin panel (e.g. pgAdmin) and Data Browser in prisma cloud, to see if all working correctly if you create a data in the playground.
    
-### Deployment of the node.js api app (on Heroku)
+### 3. Host/Deploy the node.js api app (on Heroku)
 1. ```npm install -g heroku``` if you have not got heroku cli yet.
 2. In terminal, ```heroku login```
 3. Adjust the port in index.js in the node.js app as below:
@@ -367,7 +387,7 @@ prisma automatically creates timestamps for createdAt and updatedAt.  But, we ne
     "heroku-postbuild": "babel src --out-dir dist --copy-files", // babel transpiles the src files and output to dist folder. --copy-files will copy files that are not js files as well.
     ```
 7. babel (for prod) vs babel-node (for dev)
-    - banel does not come with below so need to install
+    - babel does not come with below so need to install
         ```
         npm install @babel/polyfill
         ```
