@@ -401,10 +401,11 @@ AND
     "start": "node dist/index.js",
     ```
 7. ```heroku create```
-8. Set environmental variable in Heroku
-    ```heroku config:set PRISMA_ENDPOINT=<your endpoint here for production>```
-    ```heroku config:set PRISMA_SECRET=<your secret>```   
-9. Commit and push your changes to ```heroku git push heroku master```
+8. Set environmental variable in Heroku for production
+    ```heroku config:set PRISMA_ENDPOINT=<your endpoint here for production>```<br />
+     ```heroku config:set PRISMA_SECRET=<your secret>```<br />
+     ```heroku config:set JWTSECRET=<your secret>```
+9. Commit and push your changes to Heroku ```git push heroku master```
       
       
    
