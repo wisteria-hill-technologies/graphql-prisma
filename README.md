@@ -407,5 +407,22 @@ AND
      ```heroku config:set JWTSECRET=<your secret>```
 9. Commit and push your changes to Heroku ```git push heroku master```
       
-      
-   
+## Testing
+1. Create test.env in config
+    ```
+    PRISMA_ENDPOINT=http://localhost:4466/defaut/test
+    PRISMA_SECRET=<your_secret>
+    JWTSECRET=<your_secret>
+    ```
+2. Go to the prisma folder, then deploy
+    ```
+    prisma deploy -e ../config/test.env
+    ```
+3. Install jest for dev
+    ```npm install jest --save-dev```
+4. package.json
+    ```"test": "jest --watch",```
+5. create a 'test' folder in the root
+
+
+
