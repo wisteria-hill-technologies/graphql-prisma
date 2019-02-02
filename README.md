@@ -418,11 +418,15 @@ AND
     ```
     prisma deploy -e ../config/test.env
     ```
-3. Install jest for dev
+3. Install jest for dev in the root
     ```npm install jest --save-dev```
 4. package.json
-    ```"test": "jest --watch",```
-5. create a 'test' folder in the root
+    ```"test": "env-cmd ./config/test.env jest --watch"```
+5. create a 'tests' folder in the root
+6. Inside the 'tests' folder, create 'jest' folder.
+7. Move out the server from index.js and create server.js and import it to index.js.
+7. Inside the jest folder, create globalSetup.js and globalTeardown.js
+
 
 
 

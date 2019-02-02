@@ -1,24 +1,8 @@
 import '@babel/polyfill/noConflict';
-import { GraphQLServer, PubSub } from 'graphql-yoga';
-import { resolvers, fragmentReplacements } from './resolvers/index';
-import prisma from './prisma.js';
+import server from './server';
 
-const pubsub = new PubSub();
+const port = process.env.PORT || 4000;
 
-const server = new GraphQLServer({
-  typeDefs: './src/schema.graphql',
-  resolvers,
-  context(request) {
-    // need request.request.headers for Authorization (JWT) token in the headers.
-    return {
-      pubsub,
-      prisma,
-      request
-    }
-  },
-  fragmentReplacements
-});
-
-server.start({ port: process.env.PORT || 4000 }, () => {
-  console.log('The server is up!');
+server.start({ port }, () => {
+  console.log(`The server is up on port ${ port }!`);
 });
