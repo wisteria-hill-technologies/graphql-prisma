@@ -1,7 +1,6 @@
 # GraphQL Backend Server with Prisma ORM
 
 ![Alt text](./PrismaDiagram.svg)
-<img src="./PrismaDiagram.svg">
 
 First install prisma on your machine (if you have not done so yet).
 ``` 
