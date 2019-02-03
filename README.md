@@ -1,5 +1,8 @@
 # GraphQL Backend Server with Prisma ORM
 
+![Alt text](./PrismaDiagram.svg)
+<img src="./PrismaDiagram.svg">
+
 First install prisma on your machine (if you have not done so yet).
 ``` 
 npm install -g prisma
@@ -101,7 +104,7 @@ Set up a database
    - add your secret.
     This will lock down the prisma access.
    
-2. In prisma folder, ```deploy prisma```.
+2. In prisma folder, ```prisma deploy```.
 3. Open prisma.js in src folder.
    - add the same secret to the prisma instance.
     This will allow the node server to access the prisma.
@@ -109,6 +112,7 @@ Set up a database
 ### Accessing prisma directly still.
 1. Go to prisma folder in your terminal.
 2. execute ```prisma token``` pass env variables for dev or prod environments.
+    pass env to it like ```prisma token -e ../config/dev.env```
    1) This will generate an authorisation token.
    2) Copy and paste the token.
    3) add in the HTTP HEADERS the following in the prisma graphQL playground.
