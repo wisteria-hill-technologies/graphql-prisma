@@ -129,12 +129,6 @@ const Mutation = {
         }
       })
     }
-
-
-
-
-
-
     return prisma.mutation.updatePost({
       data: args.data,
       where: {
